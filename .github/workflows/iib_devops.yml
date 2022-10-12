@@ -31,9 +31,9 @@ env:
 
 jobs:
   package:
-    runs-on: [self-hosted, linux, x64, BUS]
-    environment: desarrollo
+    runs-on: [self-hosted, linux, x64, BUS]    
     timeout-minutes: 5
+    environment: desarrollo
     steps:
       - uses: actions/checkout@v3
       - name: Generar archivo bar de despliegue
@@ -47,7 +47,6 @@ jobs:
           path: ${{ github.workspace }}/bar/${{ env.PROJECT_NAME }}.bar      
   deploy:
     runs-on: [self-hosted, linux, x64, BUS]
-    environment: desarrollo
     timeout-minutes: 5
     needs: package
     steps:
