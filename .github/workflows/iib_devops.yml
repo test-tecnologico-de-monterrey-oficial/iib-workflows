@@ -15,10 +15,6 @@ on:
         description: 'Ejecutar mqsicreatebar para compilar conjuntos de mensajes y código Java, valores permitidos (true, false)'
         required: false
         type: string
-      SERVER_NAME:
-        description: 'Ejecutar mqsicreatebar para compilar conjuntos de mensajes y código Java, valores permitidos (true, false)'
-        required: false
-        type: string
   
 env:
   PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
