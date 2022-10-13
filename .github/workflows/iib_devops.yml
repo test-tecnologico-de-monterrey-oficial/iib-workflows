@@ -15,6 +15,10 @@ on:
         description: 'Ejecutar mqsicreatebar para compilar conjuntos de mensajes y código Java, valores permitidos (true, false)'
         required: false
         type: string
+      GITHUB_ENVIRONMET:
+        description: 'Ambiente de Github'
+        required: false
+        type: string
   
 env:
   PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
@@ -32,7 +36,8 @@ env:
 jobs:
   package:
     runs-on: [self-hosted, linux, x64, BUS]    
-    timeout-minutes: 5    
+    timeout-minutes: 5 
+    environment: ${{ inputs.GITHUB_ENVIRONMET }}
     steps:
       - uses: actions/checkout@v3
       - name: Generar archivo bar de despliegue
@@ -48,6 +53,7 @@ jobs:
     runs-on: [self-hosted, linux, x64, BUS]
     timeout-minutes: 5
     needs: package
+    environment: ${{ inputs.GITHUB_ENVIRONMET }}
     steps:
       - name: Realizar despliegue a IBM Integration Bus
         run: |
