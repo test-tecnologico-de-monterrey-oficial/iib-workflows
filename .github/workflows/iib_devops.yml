@@ -32,8 +32,7 @@ env:
 jobs:
   package:
     runs-on: [self-hosted, linux, x64, BUS]    
-    timeout-minutes: 5
-    environment: desarrollo
+    timeout-minutes: 5    
     steps:
       - uses: actions/checkout@v3
       - name: Generar archivo bar de despliegue
@@ -49,7 +48,6 @@ jobs:
     runs-on: [self-hosted, linux, x64, BUS]
     timeout-minutes: 5
     needs: package
-    environment: desarrollo
     steps:
       - name: Realizar despliegue a IBM Integration Bus
         run: |
