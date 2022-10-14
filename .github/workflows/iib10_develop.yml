@@ -1,0 +1,67 @@
+name: DevOps IIB 10 Develop
+
+on:
+  workflow_call:
+    inputs:
+      PROJECT_NAME:
+        description: 'Nombre del proyecto o Aplicación Principal del BUS a procesar'
+        required: false
+        type: string
+      LIBRARY_NAME:
+        description: 'Librería o Librerías que se desea incluir en el empaquetado, separados por espacio ejemplo: LibraryName1 LibraryName2 .... LibraryNamen'
+        required: false
+        type: string
+      RUN_CREATE_BAR:
+        description: 'Ejecutar mqsicreatebar para compilar conjuntos de mensajes y código Java, valores permitidos (true, false)'
+        required: false
+        type: string
+  
+env:
+  PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
+  LIBRARY_NAME: ${{ inputs.LIBRARY_NAME }}
+  RUN_CREATE_BAR: ${{ inputs.RUN_CREATE_BAR }}
+  SERVER_NAME: ${{ secrets.SERVER_NAME }}
+  OVERRIDE_PROPERTIES: ${{ secrets.OVERRIDE_PROPERTIES }}
+  CONNECTION_BROKER: ${{ secrets.IIB_DEVL_CONNECTION_BROKER }}
+  CONNECTION_BROKER_PASSWORD: ${{ secrets.IIB_DEVL_CONNECTION_BROKER_PASSWORD }}
+  CONNECTION_BROKER_PATH: ${{ secrets.IIB_DEVL_CONNECTION_BROKER_PATH }}
+  PACKAGE_SCRIPT_PATH: ${{ secrets.IIB_PACKAGE_SCRIPT_PATH }}
+  DEPLOY_SCRIPT_PATH: ${{ secrets.IIB_DEPLOY_SCRIPT_PATH }}
+  CLEAN_SCRIPT_PATH: ${{ secrets.IIB_CLEAN_SCRIPT_PATH }}
+
+jobs:
+  package:
+    runs-on: [self-hosted, linux, x64, BUS]    
+    timeout-minutes: 5 
+    environment: desarrollo
+    steps:
+      - uses: actions/checkout@v3
+      - name: Generar archivo bar de despliegue
+        run: |
+          echo The AMBIENTE is ${{ inputs.GITHUB_ENVIRONMET }}
+          chmod +x $PACKAGE_SCRIPT_PATH 
+          $PACKAGE_SCRIPT_PATH
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PROJECT_NAME }}
+          path: ${{ github.workspace }}/bar/${{ env.PROJECT_NAME }}.bar      
+  deploy:
+    runs-on: [self-hosted, linux, x64, BUS]
+    timeout-minutes: 5
+    needs: package
+    environment: desarrollo
+    steps:
+      - name: Realizar despliegue a IBM Integration Bus
+        run: |
+          chmod +x $DEPLOY_SCRIPT_PATH 
+          $DEPLOY_SCRIPT_PATH
+  clean:
+    runs-on: [self-hosted, linux, x64, BUS]
+    timeout-minutes: 5
+    if: ${{ always() }}
+    needs: deploy
+    steps:
+      - name: Remover directorio y archivos del respositorio
+        run: |
+          chmod +x $CLEAN_SCRIPT_PATH 
+          $CLEAN_SCRIPT_PATH
