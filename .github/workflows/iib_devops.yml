@@ -42,7 +42,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Generar archivo bar de despliegue
         run: |
-          echo The AMBIENTE is ${{ secrets.AMBIENTE }}
+          echo The AMBIENTE is ${{ inputs.GITHUB_ENVIRONMET }}
           chmod +x $PACKAGE_SCRIPT_PATH 
           $PACKAGE_SCRIPT_PATH
       - uses: actions/upload-artifact@v3
